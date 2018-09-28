@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  database:
+    image: mysql
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+    - database_volume:/var/lib/mysql
+
+  service-discovery:
+    image: feh-wilinando/microservice-service-discovery
+
+  products:
+    image: feh-wilinando/microserivice-products
+
+  stock:
+    image: feh-wilinando/microserivice-stock
+
+
+volumes:
+  database_volume:

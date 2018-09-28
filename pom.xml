@@ -26,6 +26,7 @@
     </parent>
 
     <properties>
+        <isBaseProject/>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
@@ -77,12 +78,57 @@
 
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>generate_docker_image</id>
+            <activation>
+                <property>
+                    <name>project.packaging</name>
+                    <value>jar</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>dockerfile-maven-plugin</artifactId>
+                        <version>1.4.4</version>
+                        <configuration>
+                            <repository>feh-wilinando/${project.parent.artifactId}-${project.artifactId}</repository>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>build-image</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+
+                                </goals>
+
+                                <configuration>
+                                    <!--Replace this with CI automatic controller or use Maven release plugin to increase project version-->
+                                    <tag>latest</tag>
+
+                                    <buildArgs>
+                                        <JAR_FILE>${project.build.directory}/${project.build.finalName}.${project.packaging}</JAR_FILE>
+                                    </buildArgs>
+
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
         </plugins>
     </build>
 

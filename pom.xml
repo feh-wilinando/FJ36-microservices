@@ -10,10 +10,13 @@
     <modules>
         <module>products</module>
         <module>stock</module>
+        <module>service-discovery</module>
     </modules>
     <packaging>pom</packaging>
 
     <name>microservices</name>
+
+
 
     <parent>
         <groupId>org.springframework.boot</groupId>

@@ -14,7 +14,6 @@ import java.util.List;
 
 @Api(description = "Api for products", tags = "Products")
 @RestController
-@RequestMapping(value = "products")
 public class ProductController {
 
     @ApiOperation(value = "Get all products value", notes = "Get all products")

@@ -1,0 +1,73 @@
+version: '3'
+
+services:
+  database:
+    image: mysql
+
+    environment:
+    - MYSQL_ROOT_PASSWORD=caelum
+    volumes:
+    - database-store:/var/lib/mysql
+
+
+  peer1:
+    image: microservices-service-discovery
+    environment:
+    - DEFAULT_ZONE=http://peer2:8080/eureka,http://peer3:8080/eureka
+    ports:
+    - "8090:8080"
+    depends_on:
+    - database
+    restart: on-failure
+
+  peer2:
+    image: microservices-service-discovery
+    environment:
+    - DEFAULT_ZONE=http://peer1:8090/eureka,http://peer3:8080/eureka
+    depends_on:
+    - peer1
+    restart: on-failure
+
+  peer3:
+    image: microservices-service-discovery
+    environment:
+    - DEFAULT_ZONE=http://peer1:8090/eureka,http://peer2:8080/eureka
+    depends_on:
+    - peer1
+    restart: on-failure
+
+
+  stock1:
+    image: microservices-stock
+    environment:
+    - MSSQL_HOST=database
+    - MYSQL_PASSWORD=caelum
+    - SERVICE_DISCOVERY_HOST=http://peer1:8090/eureka
+    depends_on:
+    - peer1
+    restart: on-failure
+
+  stock2:
+    image: microservices-stock
+    environment:
+    - MSSQL_HOST=database
+    - MYSQL_PASSWORD=caelum
+    - SERVICE_DISCOVERY_HOST=http://peer1:8090/eureka
+    depends_on:
+    - peer1
+    restart: on-failure
+
+  products:
+    image: microservices-products
+    environment:
+    - MSSQL_HOST=database
+    - MYSQL_PASSWORD=caelum
+    - SERVICE_DISCOVERY_HOST=http://peer1:8090/eureka
+    depends_on:
+    - peer1
+    ports:
+    - "8080:8080"
+    restart: on-failure
+
+volumes:
+  database-store:
